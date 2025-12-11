@@ -1,0 +1,9 @@
+[package]
+name = "circuit_simplifier_tool"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+iced = { version = "0.9", features = ["canvas", "tokio"] }
+uuid = { version = "1", features = ["v4", "serde", "fast-rng"] }
+serde = { version = "1.0", features = ["derive"] }
