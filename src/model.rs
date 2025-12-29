@@ -11,6 +11,7 @@ pub enum Rotation {
     Deg90,
     Deg180,
     Deg270,
+    
 }
 
 impl Rotation {
@@ -20,6 +21,7 @@ impl Rotation {
             Rotation::Deg90 => Rotation::Deg180,
             Rotation::Deg180 => Rotation::Deg270,
             Rotation::Deg270 => Rotation::Deg0,
+            
         }
     }
 }
@@ -58,6 +60,10 @@ pub struct Component {
     pub prefix: String,
     pub width: f32,
     pub height: f32,
+    /// Overrides calculated endpoints for solver-generated diagonal components.
+    pub p1_override: Option<Point>,
+    /// Overrides calculated endpoints for solver-generated diagonal components.
+    pub p2_override: Option<Point>,
 }
 
 impl Component {
@@ -87,10 +93,17 @@ impl Component {
             prefix: String::from(""),
             width,
             height,
+            p1_override: None,
+            p2_override: None,
         }
     }
 
     pub fn endpoints(&self) -> (Point, Point) {
+        // Use explicit overrides if set (for solver-generated diagonal components)
+        if let (Some(p1), Some(p2)) = (self.p1_override, self.p2_override) {
+            return (p1, p2);
+        }
+
         let half_len = if self.kind == ComponentKind::Wire {
             self.value as f32 / 2.0
         } else {
@@ -117,6 +130,7 @@ impl Component {
         
         let tolerance = 10.0;
         
+        // This geometric check works correctly even for diagonal components
         p.x >= min_x - tolerance && p.x <= max_x + tolerance && 
         p.y >= min_y - tolerance && p.y <= max_y + tolerance
     }
